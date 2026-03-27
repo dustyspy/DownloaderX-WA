@@ -1,0 +1,36 @@
+# 🔐 Secrets
+.env
+.env.*
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual Env
+venv/
+env/
+.venv/
+
+# Local DB
+accounts.json
+data.json
+
+# Firebase
+firebase_config.json
+serviceAccountKey.json
+
+# Logs
+*.log
+
+# Build
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
