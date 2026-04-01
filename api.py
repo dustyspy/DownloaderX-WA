@@ -5,7 +5,23 @@ from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+
+# =========================
+# ✅ CORS
+# =========================
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, x-api-key, admin-pass'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    return response
+
+@app.route('/', defaults={'path': ''}, methods=['OPTIONS'])
+@app.route('/<path:path>', methods=['OPTIONS'])
+def options_handler(path):
+    return '', 204
 
 # =========================
 # 🔐 CONFIG
@@ -56,9 +72,9 @@ def fb_delete(path):
         print(f"FB DELETE ERROR: {e}")
 
 def uptime_str(seconds):
-    h = seconds // 3600
-    m = (seconds % 3600) // 60
-    s = seconds % 60
+    h = int(seconds // 3600)
+    m = int((seconds % 3600) // 60)
+    s = int(seconds % 60)
     return f"{h}h {m}m {s}s"
 
 # =========================
@@ -639,7 +655,6 @@ def remove_all_users():
     if not check_admin(request):
         return jsonify({"success": False, "msg": "Unauthorized"})
 
-    # Logout all from WA first
     bots = fb_get("bots") or {}
     for uid, bot in bots.items():
         if isinstance(bot, dict) and bot.get("number"):
@@ -652,7 +667,6 @@ def remove_all_users():
             except:
                 pass
 
-    # Delete all data
     fb_delete("accounts")
     fb_delete("bots")
 
